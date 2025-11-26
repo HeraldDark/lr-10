@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Гра 21</title>
+    <style>
+        :root {
+            --bg-main: #220000;
+            --bg-panel: #330000;
+            --accent: #e53935;
+            --accent-dark: #b71c1c;
+            --accent-soft: #ef5350;
+            --text-main: #ffffff;
+            --text-muted: #ffbdbd;
+            --card-border: #ff8a80;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-soft);
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .game-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-panel);
+            padding: 20px 24px 24px 24px;
+            border-radius: 16px;
+            border: 2px solid var(--accent-dark);
+        }
+
+        .top-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .score-box {
+            min-width: 150px;
+            background: var(--accent-dark);
+            color: var(--text-main);
+            text-align: center;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-label {
+            font-size: 12px;
+            text-transform: none;
+            color: var(--text-muted);
+        }
+
+        .attempt-label {
+            text-align: center;
+            font-style: normal;
+            font-size: 14px;
+            color: var(--accent-soft);
+        }
+
+        .btn-wrapper {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .btn-generate {
+            display: inline-block;
+            background: var(--accent);
+            padding: 10px 40px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+
+            .btn-generate:hover:not(:disabled) {
+                background: var(--accent-dark);
+                transform: translateY(-1px);
+            }
+
+            .btn-generate:active:not(:disabled) {
+                transform: translateY(0);
+            }
+
+            .btn-generate:disabled {
+                opacity: 0.5;
+                cursor: default;
+            }
+
+        .cards-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card-wrapper {
+            flex: 1 1 200px;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+            .card-wrapper h3 {
+                margin-top: 0;
+                margin-bottom: 8px;
+                font-size: 15px;
+                color: var(--accent-soft);
+            }
+
+            .card-wrapper img {
+                width: 160px;
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                background: #ffffff;
+            }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--accent-soft);
+        }
+
+        .error {
+            color: #ff8a80;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .game-wrapper {
+                padding: 16px;
+            }
+
+            .top-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .score-box {
+                width: 100%;
+            }
+
+            .btn-generate {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-wrapper">
+        <h1>Гра 21</h1>
+        <div class="subtitle">Користувач проти комп'ютера. Три спроби, перемагає більша сума очок.</div>
+
+        <div class="error" id="errorMsg"></div>
+
+        <div class="top-panel">
+            <div class="score-box" id="userBox">
+                <div>USER: <span id="userName">User</span></div>
+                <div class="score-label">Очки</div>
+                <div><span id="userScore">0</span></div>
+            </div>
+
+            <div class="attempt-label">
+                <span id="attemptText">Спроба 0 з 3</span>
+            </div>
+
+            <div class="score-box">
+                <div>COMPUTER</div>
+                <div class="score-label">Очки</div>
+                <div><span id="compScore">0</span></div>
+            </div>
+        </div>
+
+        <div class="btn-wrapper">
+            <button class="btn-generate" id="btnGenerate">Generate</button>
+        </div>
+
+        <div class="cards-row">
+            <div class="card-wrapper">
+                <h3 id="userCardName">Карта користувача</h3>
+                <img id="userCardImg" src="" alt="">
+            </div>
+            <div class="card-wrapper">
+                <h3 id="compCardName">Карта комп'ютера</h3>
+                <img id="compCardImg" src="" alt="">
+            </div>
+        </div>
+
+        <div class="result" id="finalResult"></div>
+    </div>
+
+    <script>
+        const cards = [
+            { name: "6", value: 6, src: "https://deckofcardsapi.com/static/img/6H.png" },
+            { name: "7", value: 7, src: "https://deckofcardsapi.com/static/img/7H.png" },
+            { name: "8", value: 8, src: "https://deckofcardsapi.com/static/img/8H.png" },
+            { name: "9", value: 9, src: "https://deckofcardsapi.com/static/img/9H.png" },
+            { name: "10", value: 10, src: "https://deckofcardsapi.com/static/img/0H.png" },
+            { name: "Валет", value: 2, src: "https://deckofcardsapi.com/static/img/JH.png" },
+            { name: "Дама", value: 3, src: "https://deckofcardsapi.com/static/img/QH.png" },
+            { name: "Король", value: 4, src: "https://deckofcardsapi.com/static/img/KH.png" },
+            { name: "Туз", value: 11, src: "https://deckofcardsapi.com/static/img/AH.png" }
+        ];
+
+        const maxAttempts = 3;
+        let currentAttempt = 0;
+        let userSum = 0;
+        let compSum = 0;
+
+        const userNameSpan = document.getElementById("userName");
+        const userScoreSpan = document.getElementById("userScore");
+        const compScoreSpan = document.getElementById("compScore");
+        const attemptText = document.getElementById("attemptText");
+        const btnGenerate = document.getElementById("btnGenerate");
+        const userCardName = document.getElementById("userCardName");
+        const compCardName = document.getElementById("compCardName");
+        const userCardImg = document.getElementById("userCardImg");
+        const compCardImg = document.getElementById("compCardImg");
+        const finalResult = document.getElementById("finalResult");
+        const errorMsg = document.getElementById("errorMsg");
+
+        function askUserName() {
+            let name = "";
+            while (!name) {
+                name = prompt("Введіть своє ім'я:");
+                if (name === null) {
+                    errorMsg.textContent = "Ім'я обов'язкове для початку гри.";
+                    btnGenerate.disabled = true;
+                    return;
+                }
+                name = name.trim();
+                if (!name) {
+                    alert("Ім'я не може бути порожнім");
+                }
+            }
+            userNameSpan.textContent = name;
+            errorMsg.textContent = "";
+        }
+
+        askUserName();
+
+        function getRandomCard() {
+            const index = Math.floor(Math.random() * cards.length);
+            return cards[index];
+        }
+
+        function playRound() {
+            if (btnGenerate.disabled) return;
+
+            currentAttempt++;
+            attemptText.textContent = `Спроба ${currentAttempt} з ${maxAttempts}`;
+
+            const userCard = getRandomCard();
+            userSum += userCard.value;
+            userScoreSpan.textContent = userSum;
+            userCardName.textContent =
+                `Карта користувача: ${userCard.name} (номінал ${userCard.value})`;
+            userCardImg.src = userCard.src;
+            userCardImg.alt = userCard.name;
+
+            const compCard = getRandomCard();
+            compSum += compCard.value;
+            compScoreSpan.textContent = compSum;
+            compCardName.textContent =
+                `Карта комп'ютера: ${compCard.name} (номінал ${compCard.value})`;
+            compCardImg.src = compCard.src;
+            compCardImg.alt = compCard.name;
+
+            if (currentAttempt === maxAttempts) {
+                btnGenerate.disabled = true;
+                showWinner();
+            }
+        }
+
+        function showWinner() {
+            let message =
+                `Результат: ${userNameSpan.textContent} набрав ${userSum} очок, ` +
+                `комп'ютер набрав ${compSum} очок. `;
+
+            if (userSum > compSum) {
+                message += "Переміг користувач.";
+            } else if (userSum < compSum) {
+                message += "Переміг комп'ютер.";
+            } else {
+                message += "Нічия.";
+            }
+
+            finalResult.textContent = message;
+        }
+
+        btnGenerate.addEventListener("click", playRound);
+    </script>
+
+</body>
+</html>
